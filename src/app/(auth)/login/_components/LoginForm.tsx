@@ -128,7 +128,7 @@ function LoginForm() {
                   viewBox="0 0 24 24"
                   width={32}
                   height={32}
-                  className="text-white dark:text-black fill-current"
+                  className="text-white fill-current"
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <title>Github</title>
