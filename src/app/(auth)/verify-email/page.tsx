@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import {
   Card,
   CardContent,
@@ -17,8 +18,9 @@ import { useState, useTransition } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default function VerifyEmailPage() {
+function VerifyEmailForm() {
   const router = useRouter();
   const [emailPending, startEmailTransition] = useTransition();
   const [code, setCode] = useState("");
@@ -85,5 +87,13 @@ export default function VerifyEmailPage() {
         </CardContent>
       </CardHeader>
     </Card>
+  );
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={<Skeleton className="w-full h-full" />}>
+      <VerifyEmailForm />
+    </Suspense>
   );
 }
