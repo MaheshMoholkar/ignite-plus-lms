@@ -18,9 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { authClient } from "@/lib/auth-client";
-import { toast } from "sonner";
+import { useSignOut } from "@/hooks/use-signout";
 
 interface User {
   name: string;
@@ -29,29 +27,18 @@ interface User {
 }
 
 export default function UserDropdown(props: User) {
-  const router = useRouter();
-
-  const handleLogout = async () => {
-    await authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          router.push("/");
-          toast.success("Logged out successfully");
-        },
-        onError: (error) => {
-          toast.error(error.error.message);
-        },
-      },
-    });
-  };
+  const handleSignOut = useSignOut();
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="h-auto p-0 hover:bg-transparent">
           <Avatar>
-            <AvatarImage src={props.image ?? ""} alt="Profile image" />
-            <AvatarFallback>{props.name.charAt(0)}</AvatarFallback>
+            <AvatarImage
+              src={props.image ?? `https://avatar.vercel.sh/${props.email}`}
+              alt="Profile image"
+            />
+            <AvatarFallback>{props.email.charAt(0)}</AvatarFallback>
           </Avatar>
           <ChevronDownIcon
             size={16}
@@ -99,7 +86,7 @@ export default function UserDropdown(props: User) {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleLogout}>
+        <DropdownMenuItem onClick={handleSignOut}>
           <LogOutIcon size={16} className="opacity-60" aria-hidden="true" />
           <span>Logout</span>
         </DropdownMenuItem>

@@ -68,14 +68,6 @@ function Navbar() {
               >
                 Login
               </Link>
-              <Link
-                href="/login"
-                className={buttonVariants({
-                  variant: "default",
-                })}
-              >
-                Get Started
-              </Link>
             </>
           )}
         </div>
