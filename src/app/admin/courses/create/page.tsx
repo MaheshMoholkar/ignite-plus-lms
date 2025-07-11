@@ -152,7 +152,7 @@ function CreateCoursePage() {
                     <FormLabel>Description</FormLabel>
                     <FormControl>
                       {/* <Textarea placeholder="Description" {...field} /> */}
-                      <RichTextEditor />
+                      <RichTextEditor field={field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
