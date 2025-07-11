@@ -1,9 +1,12 @@
+import { adminGetCourses } from "@/app/data/admin/admin-get-courses";
 import { buttonVariants } from "@/components/ui/button";
 import { PlusIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import { AdminCourseCard } from "./_components/AdminCourseCard";
 
-function CoursesPage() {
+export default async function CoursesPage() {
+  const courses = await adminGetCourses();
   return (
     <>
       <div className="flex items-center justify-between">
@@ -13,8 +16,11 @@ function CoursesPage() {
           Create Course
         </Link>
       </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+        {courses.map((course) => (
+          <AdminCourseCard key={course.id} {...course} />
+        ))}
+      </div>
     </>
   );
 }
-
-export default CoursesPage;

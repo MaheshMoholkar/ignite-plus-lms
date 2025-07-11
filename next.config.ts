@@ -9,6 +9,12 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "ignite-db.fly.storage.tigris.dev",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
 };
