@@ -51,13 +51,11 @@ export const courseSchema = z.object({
   fileKey: z.string().min(1, { message: "File key is required" }),
   price: z.coerce
     .number()
-    .min(1, { message: "Price must be greater than 0" }) as z.ZodType<number>,
+    .min(1, { message: "Price must be greater than 0" }) as z.ZodNumber,
   duration: z.coerce
     .number()
     .min(1, { message: "Duration must be greater than 0" })
-    .max(500, {
-      message: "Duration must be less than 500",
-    }) as z.ZodType<number>,
+    .max(500, { message: "Duration must be less than 500" }) as z.ZodNumber,
   level: z.enum(courseLevels, { message: "Invalid level" }),
   category: z.enum(courseCategories, { message: "Invalid category" }),
   smallDescription: z

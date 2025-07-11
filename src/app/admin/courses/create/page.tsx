@@ -29,9 +29,14 @@ import {
 } from "@/lib/zodSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import slugify from "slugify";
-import { ArrowLeftIcon, SparkleIcon } from "lucide-react";
+import {
+  ArrowLeftIcon,
+  Loader2Icon,
+  PlusIcon,
+  SparkleIcon,
+} from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import React, { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -43,8 +48,14 @@ import {
 } from "@/components/ui/select";
 import RichTextEditor from "@/components/rich-text-editor/Editor";
 import FileUploader from "@/components/file-uploader/FileUploader";
+import { tryCatch } from "@/hooks/try-catch";
+import { CreateCourse } from "./actions";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 function CreateCoursePage() {
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
   const form = useForm<CourseSchemaType>({
     resolver: zodResolver(courseSchema),
     defaultValues: {
@@ -61,8 +72,22 @@ function CreateCoursePage() {
     },
   });
 
-  const onSubmit = (data: CourseSchemaType) => {
-    console.log(data);
+  const onSubmit = (values: CourseSchemaType) => {
+    startTransition(async () => {
+      const { data: result, error } = await tryCatch(CreateCourse(values));
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+
+      if (result.status === "success") {
+        toast.success(result.message);
+        form.reset();
+        router.push(`/admin/courses/${result.data.id}`);
+      } else if (result.status === "error") {
+        toast.error(result.message);
+      }
+    });
   };
 
   return (
@@ -291,7 +316,18 @@ function CreateCoursePage() {
                   </FormItem>
                 )}
               />
-              <Button type="submit">Create Course</Button>
+              <Button type="submit" disabled={isPending} className="w-fit">
+                {isPending ? (
+                  <>
+                    Creating...
+                    <Loader2Icon className="size-4 ml-1 animate-spin" />
+                  </>
+                ) : (
+                  <>
+                    Create Course <PlusIcon className="size-4 ml-1" />
+                  </>
+                )}
+              </Button>
             </form>
           </Form>
         </CardContent>
