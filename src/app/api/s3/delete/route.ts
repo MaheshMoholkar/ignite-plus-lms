@@ -2,8 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { s3Client } from "@/lib/S3Client";
 import { env } from "@/env";
+import { requireAdmin } from "@/app/data/admin/require-admin";
 
 export async function DELETE(request: NextRequest) {
+  await requireAdmin();
+
   try {
     const { searchParams } = new URL(request.url);
     const key = searchParams.get("key");

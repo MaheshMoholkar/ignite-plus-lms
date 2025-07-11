@@ -5,6 +5,7 @@ import { env } from "@/env";
 import { v4 as uuidv4 } from "uuid";
 import { s3Client } from "@/lib/S3Client";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { requireAdmin } from "@/app/data/admin/require-admin";
 
 export const fileUploadSchema = z.object({
   file: z.string().min(1, { message: "File is required" }),
@@ -14,6 +15,8 @@ export const fileUploadSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  await requireAdmin();
+
   try {
     const body = await request.json();
 

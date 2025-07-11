@@ -157,7 +157,8 @@ function CreateCoursePage() {
                     );
                   }}
                 >
-                  Generate Slug <SparkleIcon className="size-4 ml-1" />
+                  <SparkleIcon className="size-4 mr-1" />
+                  Generate Slug
                 </Button>
               </div>
               <FormField
@@ -324,7 +325,8 @@ function CreateCoursePage() {
                   </>
                 ) : (
                   <>
-                    Create Course <PlusIcon className="size-4 ml-1" />
+                    <PlusIcon className="size-4 mr-1" />
+                    Create Course
                   </>
                 )}
               </Button>

@@ -3,23 +3,13 @@
 import { prisma } from "@/lib/prisma";
 import { ApiResponse } from "@/lib/types";
 import { courseSchema, CourseSchemaType } from "@/lib/zodSchemas";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { requireAdmin } from "@/app/data/admin/require-admin";
 
 export async function CreateCourse(
   data: CourseSchemaType
 ): Promise<ApiResponse> {
+  const session = await requireAdmin();
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-    if (!session?.user) {
-      return {
-        status: "error",
-        message: "Unauthorized",
-      };
-    }
-
     const validation = courseSchema.safeParse(data);
 
     if (!validation.success) {
