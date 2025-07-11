@@ -1,16 +1,43 @@
 import { z } from "zod";
 
-export const courseLevels = ["Beginner", "Intermediate", "Advanced"];
-
-export const courseStatus = ["Draft", "Published", "Archived"];
-
+// Enum values for database
+export const courseLevels = ["BEGINNER", "INTERMEDIATE", "ADVANCED"] as const;
+export const courseStatus = ["DRAFT", "PUBLISHED", "ARCHIVED"] as const;
 export const courseCategories = [
-  "Web Development",
-  "Mobile Development",
-  "Data Science",
+  "WEB_DEVELOPMENT",
+  "MOBILE_DEVELOPMENT",
+  "DATA_SCIENCE",
   "AI",
-  "Game Development",
-];
+  "GAME_DEVELOPMENT",
+] as const;
+
+export const courseLevelLabels: Record<string, string> = {
+  BEGINNER: "Beginner",
+  INTERMEDIATE: "Intermediate",
+  ADVANCED: "Advanced",
+};
+
+export const courseStatusLabels: Record<string, string> = {
+  DRAFT: "Draft",
+  PUBLISHED: "Published",
+  ARCHIVED: "Archived",
+};
+
+export const courseCategoryLabels: Record<string, string> = {
+  WEB_DEVELOPMENT: "Web Development",
+  MOBILE_DEVELOPMENT: "Mobile Development",
+  DATA_SCIENCE: "Data Science",
+  AI: "AI",
+  GAME_DEVELOPMENT: "Game Development",
+};
+
+// Utility functions for getting display labels
+export const getCourseLevelLabel = (level: string) =>
+  courseLevelLabels[level] || level;
+export const getCourseStatusLabel = (status: string) =>
+  courseStatusLabels[status] || status;
+export const getCourseCategoryLabel = (category: string) =>
+  courseCategoryLabels[category] || category;
 
 export const courseSchema = z.object({
   title: z
@@ -22,8 +49,8 @@ export const courseSchema = z.object({
     .min(10, { message: "Description must be at least 10 characters" })
     .max(1000, { message: "Description must be less than 1000 characters" }),
   fileKey: z.string().min(1, { message: "File key is required" }),
-  price: z.number().min(1, { message: "Price must be greater than 0" }),
-  duration: z
+  price: z.coerce.number().min(1, { message: "Price must be greater than 0" }),
+  duration: z.coerce
     .number()
     .min(1, { message: "Duration must be greater than 0" })
     .max(500, { message: "Duration must be less than 500" }),

@@ -25,13 +25,18 @@ interface UploaderState {
   fileType: "image" | "video";
 }
 
-function FileUploader() {
+interface FileUploaderProps {
+  value?: string;
+  onChange?: (value: string) => void;
+}
+
+function FileUploader({ value, onChange }: FileUploaderProps) {
   const [fileState, setFileState] = useState<UploaderState>({
     id: null,
     file: null,
     uploading: false,
     progress: 0,
-    key: undefined,
+    key: value,
     error: false,
     isDeleting: false,
     objectUrl: undefined,
@@ -93,6 +98,7 @@ function FileUploader() {
               objectUrl: data.presignedUrl,
             }));
             toast.success("File uploaded successfully");
+            onChange?.(data.key);
             resolve();
           } else {
             reject();
@@ -174,6 +180,8 @@ function FileUploader() {
       if (fileState.objectUrl && !fileState.objectUrl.startsWith("http")) {
         URL.revokeObjectURL(fileState.objectUrl);
       }
+
+      onChange?.("");
 
       setFileState(() => ({
         isDeleting: false,

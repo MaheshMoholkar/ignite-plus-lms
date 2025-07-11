@@ -23,6 +23,9 @@ import {
   courseSchema,
   CourseSchemaType,
   courseStatus,
+  courseCategoryLabels,
+  courseLevelLabels,
+  courseStatusLabels,
 } from "@/lib/zodSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import slugify from "slugify";
@@ -165,7 +168,10 @@ function CreateCoursePage() {
                   <FormItem className="w-full">
                     <FormLabel>Thumbnail Image</FormLabel>
                     <FormControl>
-                      <FileUploader />
+                      <FileUploader
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -190,13 +196,8 @@ function CreateCoursePage() {
                         </FormControl>
                         <SelectContent>
                           {courseCategories.map((category) => (
-                            <SelectItem
-                              key={category}
-                              value={category
-                                .toUpperCase()
-                                .replaceAll(" ", "_")}
-                            >
-                              {category}
+                            <SelectItem key={category} value={category}>
+                              {courseCategoryLabels[category]}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -222,8 +223,8 @@ function CreateCoursePage() {
                         </FormControl>
                         <SelectContent>
                           {courseLevels.map((level) => (
-                            <SelectItem key={level} value={level.toUpperCase()}>
-                              {level}
+                            <SelectItem key={level} value={level}>
+                              {courseLevelLabels[level]}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -280,8 +281,8 @@ function CreateCoursePage() {
                       </FormControl>
                       <SelectContent>
                         {courseStatus.map((status) => (
-                          <SelectItem key={status} value={status.toUpperCase()}>
-                            {status}
+                          <SelectItem key={status} value={status}>
+                            {courseStatusLabels[status]}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -290,6 +291,7 @@ function CreateCoursePage() {
                   </FormItem>
                 )}
               />
+              <Button type="submit">Create Course</Button>
             </form>
           </Form>
         </CardContent>
