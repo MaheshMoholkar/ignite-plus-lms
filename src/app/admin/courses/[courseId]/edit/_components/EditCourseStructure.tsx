@@ -36,6 +36,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { toast } from "sonner";
+import { UpdateCourseChapters, UpdateCourseLessons } from "../actions";
 
 function EditCourseStructure({ course }: { course: AdminGetCourseType }) {
   const initialItems =
@@ -59,7 +61,7 @@ function EditCourseStructure({ course }: { course: AdminGetCourseType }) {
     className?: string;
     data?: {
       type: "chapter" | "lesson";
-      id?: string;
+      chapterId?: string;
     };
   }) {
     const {
@@ -69,7 +71,7 @@ function EditCourseStructure({ course }: { course: AdminGetCourseType }) {
       transition,
       transform,
       isDragging,
-    } = useSortable({ id: props.id });
+    } = useSortable({ id: props.id, data: props.data });
 
     const style = {
       transition,
@@ -91,13 +93,150 @@ function EditCourseStructure({ course }: { course: AdminGetCourseType }) {
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
-    if (!over) return;
-    if (active.id !== over?.id) {
-      setItems((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over.id);
-        return arrayMove(items, oldIndex, newIndex);
-      });
+
+    if (!over || active.id === over.id) return;
+
+    const activeId = active.id;
+    const overId = over.id;
+    const activeType = active.data.current?.type as "chapter" | "lesson";
+    const overType = over.data.current?.type as "chapter" | "lesson";
+
+    if (activeType === "chapter") {
+      let targetChapterId = null;
+
+      if (overType === "chapter") {
+        targetChapterId = overId;
+      } else if (overType === "lesson") {
+        targetChapterId = over.data.current?.chapterId ?? null;
+      }
+
+      if (!targetChapterId) {
+        toast.error("Please drop the chapter in the correct position");
+        return;
+      }
+
+      const oldIndex = items.findIndex((item) => item.id === activeId);
+      const newIndex = items.findIndex((item) => item.id === targetChapterId);
+
+      if (oldIndex === -1 || newIndex === -1) {
+        toast.error("Invalid Action");
+        return;
+      }
+
+      const newItems = arrayMove(items, oldIndex, newIndex);
+
+      const reorderedItems = newItems.map((chapter, index) => ({
+        ...chapter,
+        order: index + 1,
+      }));
+
+      const previousItems = [...items];
+
+      setItems(reorderedItems);
+
+      if (course.id) {
+        const chaptersToUpdate = reorderedItems.map((chapter) => ({
+          id: chapter.id,
+          position: chapter.order,
+        }));
+
+        const reorderChaptersPromise = () =>
+          UpdateCourseChapters(course.id, chaptersToUpdate);
+
+        toast.promise(reorderChaptersPromise(), {
+          loading: "Reordering Chapters...",
+          success: (result) => {
+            if (result.status === "success") return result.message;
+            throw new Error(result.message);
+          },
+          error: () => {
+            setItems(previousItems);
+            return "Failed to reorder chapters";
+          },
+        });
+      }
+
+      return;
+    }
+
+    if (activeType === "lesson" && overType == "lesson") {
+      const chapterId = active.data.current?.chapterId;
+      const overChapterId = over.data.current?.chapterId;
+
+      if (!chapterId || chapterId !== overChapterId) {
+        toast.error("Not Allowed");
+        return;
+      }
+
+      const chapterIndex = items.findIndex(
+        (chapter) => chapter.id === chapterId
+      );
+
+      if (chapterIndex === -1) {
+        toast.error("Invalid Action");
+        return;
+      }
+
+      const chapterToUpdate = items[chapterIndex];
+
+      const oldLessonIndex = chapterToUpdate.lessons.findIndex(
+        (lesson) => lesson.id === activeId
+      );
+
+      const newLessonIndex = chapterToUpdate.lessons.findIndex(
+        (lesson) => lesson.id === overId
+      );
+
+      if (oldLessonIndex === -1 || newLessonIndex === -1) {
+        toast.error("Invalid Action");
+        return;
+      }
+
+      const newLessons = arrayMove(
+        chapterToUpdate.lessons,
+        oldLessonIndex,
+        newLessonIndex
+      );
+
+      const reorderedLessons = newLessons.map((lesson, index) => ({
+        ...lesson,
+        order: index + 1,
+      }));
+
+      const newItems = [...items];
+
+      newItems[chapterIndex] = {
+        ...chapterToUpdate,
+        lessons: reorderedLessons,
+      };
+
+      const previousItems = [...items];
+
+      setItems(newItems);
+
+      if (course.id) {
+        const lessonsToUpdate = reorderedLessons.map((lesson) => ({
+          id: lesson.id,
+          position: lesson.order,
+        }));
+
+        const reorderLessonsPromise = () =>
+          UpdateCourseLessons(chapterId, course.id, lessonsToUpdate);
+
+        toast.promise(reorderLessonsPromise(), {
+          loading: "Reordering Lessons...",
+          success: (result) => {
+            if (result.status === "success") return result.message;
+            throw new Error(result.message);
+          },
+          error: () => {
+            setItems(previousItems);
+            return "Failed to reorder lessons";
+          },
+        });
+      }
+
+      return;
     }
   }
 
@@ -130,13 +269,16 @@ function EditCourseStructure({ course }: { course: AdminGetCourseType }) {
         <CardHeader className="flex flex-row justify-between items-center border-b border-border">
           <CardTitle>Chapters</CardTitle>
         </CardHeader>
-        <CardContent>
-          <SortableContext items={items} strategy={verticalListSortingStrategy}>
+        <CardContent className="space-y-8">
+          <SortableContext
+            items={items.map((item) => item.id)}
+            strategy={verticalListSortingStrategy}
+          >
             {items.map((item) => (
               <SortableItem
                 key={item.id}
                 id={item.id}
-                data={{ type: "chapter", id: item.id }}
+                data={{ type: "chapter", chapterId: item.id }}
               >
                 {(listeners) => (
                   <Card className="flex flex-col gap-2">
@@ -165,6 +307,7 @@ function EditCourseStructure({ course }: { course: AdminGetCourseType }) {
                           </CollapsibleTrigger>
                           <p
                             className="cursor-pointer hover:text-primary"
+                            onClick={() => toggleChapter(item.id)}
                             onPointerDown={(e) => e.stopPropagation()}
                           >
                             {item.title}
@@ -184,7 +327,7 @@ function EditCourseStructure({ course }: { course: AdminGetCourseType }) {
                               <SortableItem
                                 key={lesson.id}
                                 id={lesson.id}
-                                data={{ type: "lesson", id: item.id }}
+                                data={{ type: "lesson", chapterId: item.id }}
                               >
                                 {(listeners) => (
                                   <div className="flex items-center justify-between p-2 hover:bg-accent rounded-sm">
