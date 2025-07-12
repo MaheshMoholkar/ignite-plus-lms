@@ -43,7 +43,7 @@ export async function UpdateCourseLessons(
   courseId: string,
   lessons: { id: string; position: number }[]
 ): Promise<ApiResponse> {
-  const session = await requireAdmin();
+  await requireAdmin();
 
   try {
     if (!lessons || lessons.length === 0) {
