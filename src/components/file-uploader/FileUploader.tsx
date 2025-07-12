@@ -12,6 +12,7 @@ import {
 import { toast } from "sonner";
 import { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { useConstructUrl } from "@/hooks/use-contruct-url";
 
 interface UploaderState {
   id: string | null;
@@ -39,7 +40,7 @@ function FileUploader({ value, onChange }: FileUploaderProps) {
     key: value,
     error: false,
     isDeleting: false,
-    objectUrl: undefined,
+    objectUrl: value ? useConstructUrl(value) : undefined,
     fileType: "image",
   });
 

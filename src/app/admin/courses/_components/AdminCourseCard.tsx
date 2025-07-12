@@ -97,7 +97,7 @@ export function AdminCourseCard({
           </div>
         </div>
         <Link
-          href={`/admin/courses/${id}`}
+          href={`/admin/courses/${id}/edit`}
           className={buttonVariants({
             className: "mt-4 w-full",
           })}
