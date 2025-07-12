@@ -70,12 +70,12 @@ export async function UpdateCourseLessons(
 
     return {
       status: "success",
-      message: "Lessons updated successfully",
+      message: "Lessons reordered successfully",
     };
   } catch (error) {
     return {
       status: "error",
-      message: "Failed to update lessons",
+      message: "Failed to reordered lessons",
     };
   }
 }
