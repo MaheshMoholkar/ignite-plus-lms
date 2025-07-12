@@ -3,20 +3,15 @@
 import * as React from "react";
 import {
   IconDashboard,
-  IconDatabase,
-  IconFileWord,
   IconHelp,
   IconReport,
   IconSearch,
   IconSettings,
   IconFileDescription,
   IconUsers,
-  IconChartBar,
-  IconFolder,
-  IconFileAi,
+  IconFileText,
 } from "@tabler/icons-react";
 
-import { NavDocuments } from "@/components/sidebar/nav-documents";
 import { NavMain } from "@/components/sidebar/nav-main";
 import { NavSecondary } from "@/components/sidebar/nav-secondary";
 import { NavUser } from "@/components/sidebar/nav-user";
@@ -52,14 +47,19 @@ const data = {
       icon: IconUsers,
     },
     {
-      title: "Assignments",
+      title: "Analytics",
       url: "#",
-      icon: IconFileWord,
+      icon: IconReport,
     },
     {
-      title: "Grades",
+      title: "Projects",
       url: "#",
-      icon: IconChartBar,
+      icon: IconFileText,
+    },
+    {
+      title: "Teams",
+      url: "#",
+      icon: IconUsers,
     },
   ],
   navSecondary: [
@@ -77,33 +77,6 @@ const data = {
       title: "Search",
       url: "#",
       icon: IconSearch,
-    },
-  ],
-  documents: [
-    {
-      name: "Course Materials",
-      url: "#",
-      icon: IconFolder,
-    },
-    {
-      name: "Student Records",
-      url: "#",
-      icon: IconDatabase,
-    },
-    {
-      name: "Analytics",
-      url: "#",
-      icon: IconChartBar,
-    },
-    {
-      name: "Reports",
-      url: "#",
-      icon: IconReport,
-    },
-    {
-      name: "AI Assistant",
-      url: "#",
-      icon: IconFileAi,
     },
   ],
 };
@@ -130,7 +103,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
