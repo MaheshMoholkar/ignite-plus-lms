@@ -38,6 +38,10 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { toast } from "sonner";
 import { UpdateCourseChapters, UpdateCourseLessons } from "../actions";
+import NewChapterModal from "./NewChapterModal";
+import NewLessonModal from "./NewLessonModal";
+import { DeleteLessonAlert } from "./DeleteLesson";
+import { DeleteChapterAlert } from "./DeleteChapter";
 
 function EditCourseStructure({ course }: { course: AdminGetCourseType }) {
   const initialItems =
@@ -288,6 +292,7 @@ function EditCourseStructure({ course }: { course: AdminGetCourseType }) {
       <Card>
         <CardHeader className="flex flex-row justify-between items-center border-b border-border">
           <CardTitle>Chapters</CardTitle>
+          <NewChapterModal courseId={course.id} />
         </CardHeader>
         <CardContent className="space-y-8">
           <SortableContext
@@ -333,9 +338,15 @@ function EditCourseStructure({ course }: { course: AdminGetCourseType }) {
                             {item.title}
                           </p>
                         </div>
-                        <Button size="icon" variant="ghost">
-                          <Trash2 className="size-4" />
-                        </Button>
+                        <div
+                          className="flex gap-2"
+                          onPointerDown={(e) => e.stopPropagation()}
+                        >
+                          <DeleteChapterAlert
+                            chapterId={item.id}
+                            courseId={course.id}
+                          />
+                        </div>
                       </div>
                       <CollapsibleContent>
                         <div className="p-1">
@@ -367,19 +378,29 @@ function EditCourseStructure({ course }: { course: AdminGetCourseType }) {
                                         {lesson.title}
                                       </Link>
                                     </div>
-                                    <Button size="icon" variant="ghost">
-                                      <Trash2 className="size-4" />
-                                    </Button>
+                                    <div
+                                      onPointerDown={(e) => e.stopPropagation()}
+                                    >
+                                      <DeleteLessonAlert
+                                        lessonId={lesson.id}
+                                        courseId={course.id}
+                                        chapterId={item.id}
+                                      />
+                                    </div>
                                   </div>
                                 )}
                               </SortableItem>
                             ))}
+                            <div
+                              className="p-2"
+                              onPointerDown={(e) => e.stopPropagation()}
+                            >
+                              <NewLessonModal
+                                courseId={course.id}
+                                chapterId={item.id}
+                              />
+                            </div>
                           </SortableContext>
-                          <div className="p-2">
-                            <Button variant="outline" className="w-full">
-                              Add Lesson
-                            </Button>
-                          </div>
                         </div>
                       </CollapsibleContent>
                     </Collapsible>

@@ -21,11 +21,17 @@ export async function adminGetCourse(courseId: string) {
       slug: true,
       category: true,
       chapters: {
+        orderBy: {
+          position: "asc",
+        },
         select: {
           id: true,
           title: true,
           position: true,
           lessons: {
+            orderBy: {
+              position: "asc",
+            },
             select: {
               id: true,
               title: true,
