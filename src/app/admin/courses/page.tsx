@@ -4,6 +4,7 @@ import { PlusIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { AdminCourseCard } from "./_components/AdminCourseCard";
+import { EmptyState } from "@/components/common/EmptyState";
 
 export default async function CoursesPage() {
   const courses = await adminGetCourses();
@@ -17,9 +18,18 @@ export default async function CoursesPage() {
         </Link>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
-        {courses.map((course) => (
-          <AdminCourseCard key={course.id} {...course} />
-        ))}
+        {courses.length > 0 ? (
+          courses.map((course) => (
+            <AdminCourseCard key={course.id} {...course} />
+          ))
+        ) : (
+          <EmptyState
+            title={"No Courses"}
+            description={"Create a new course to get started"}
+            buttonText={"Create Course"}
+            href={"/admin/courses/create"}
+          />
+        )}
       </div>
     </>
   );
