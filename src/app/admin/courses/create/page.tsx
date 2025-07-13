@@ -197,6 +197,7 @@ function CreateCoursePage() {
                       <FileUploader
                         value={field.value}
                         onChange={field.onChange}
+                        fileType="image"
                       />
                     </FormControl>
                     <FormMessage />

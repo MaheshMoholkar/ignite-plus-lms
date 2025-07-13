@@ -20,12 +20,16 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { tryCatch } from "@/hooks/try-catch";
 import { lessonSchema, LessonSchemaType } from "@/lib/zodSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, Loader2Icon, PencilIcon } from "lucide-react";
 import Link from "next/link";
 import React, { useTransition } from "react";
 import { useForm } from "react-hook-form";
+import { UpdateLesson } from "../actions";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 function LessonForm({
   lesson,
@@ -37,6 +41,7 @@ function LessonForm({
   courseId: string;
 }) {
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   const form = useForm<LessonSchemaType>({
     resolver: zodResolver(lessonSchema),
@@ -50,7 +55,25 @@ function LessonForm({
     },
   });
 
-  const onSubmit = (values: LessonSchemaType) => {};
+  const onSubmit = (values: LessonSchemaType) => {
+    startTransition(async () => {
+      const { data: result, error } = await tryCatch(
+        UpdateLesson(values, lesson.id)
+      );
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+
+      if (result.status === "success") {
+        toast.success(result.message);
+        form.reset();
+        router.push(`/admin/courses/${courseId}/edit`);
+      } else if (result.status === "error") {
+        toast.error(result.message);
+      }
+    });
+  };
 
   return (
     <div>
