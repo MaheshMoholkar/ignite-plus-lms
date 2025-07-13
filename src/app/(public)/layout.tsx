@@ -5,7 +5,9 @@ function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div>
       <Navbar />
-      <main className="container px-4 md:px-6 lg:px-8 mx-auto">{children}</main>
+      <main className="container px-4 md:px-6 lg:px-8 mx-auto mb-32">
+        {children}
+      </main>
     </div>
   );
 }
