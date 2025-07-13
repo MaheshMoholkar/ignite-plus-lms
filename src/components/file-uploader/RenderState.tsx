@@ -10,7 +10,13 @@ import React from "react";
 import { Button } from "../ui/button";
 import Image from "next/image";
 
-export function RenderEmptyState({ isDragActive }: { isDragActive: boolean }) {
+export function RenderEmptyState({
+  isDragActive,
+  fileType,
+}: {
+  isDragActive: boolean;
+  fileType: "image" | "video";
+}) {
   return (
     <div className="text-center">
       <div className="flex items-center mx-auto justify-center size-12 rounded-full bg-muted mb-4">
@@ -21,10 +27,13 @@ export function RenderEmptyState({ isDragActive }: { isDragActive: boolean }) {
           )}
         />
       </div>
-      <p className="text-base font-semibold text-foreground">
-        Drop your files here or{" "}
-        <span className="text-primary font-bold cursor-pointer">
+      <p className="text-base font-semibold text-foreground flex items-center">
+        Drop your {fileType === "image" ? "images" : "videos"} here or
+        <span className="text-primary font-bold cursor-pointer ml-2">
           click to upload
+        </span>
+        <span className="text-xs text-muted-foreground ml-2">
+          (Upto {fileType === "image" ? "5MB" : "500MB"})
         </span>
       </p>
       <Button type="button" className="mt-4">

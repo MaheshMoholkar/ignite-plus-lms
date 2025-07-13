@@ -258,7 +258,7 @@ function FileUploader({ value, onChange, fileType }: FileUploaderProps) {
         />
       );
     }
-    return <RenderEmptyState isDragActive={isDragActive} />;
+    return <RenderEmptyState isDragActive={isDragActive} fileType={fileType} />;
   }
 
   useEffect(() => {
