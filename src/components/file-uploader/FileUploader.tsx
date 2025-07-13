@@ -29,9 +29,10 @@ interface UploaderState {
 interface FileUploaderProps {
   value?: string;
   onChange?: (value: string) => void;
+  fileType: "image" | "video";
 }
 
-function FileUploader({ value, onChange }: FileUploaderProps) {
+function FileUploader({ value, onChange, fileType }: FileUploaderProps) {
   const [fileState, setFileState] = useState<UploaderState>({
     id: null,
     file: null,
@@ -41,31 +42,79 @@ function FileUploader({ value, onChange }: FileUploaderProps) {
     error: false,
     isDeleting: false,
     objectUrl: value ? useConstructUrl(value) : undefined,
-    fileType: "image",
+    fileType: fileType,
   });
 
-  async function uploadFile(file: File) {
-    setFileState((prev) => ({
-      ...prev,
-      uploading: true,
-      progress: 0,
-    }));
+  const uploadFile = useCallback(
+    async (file: File) => {
+      setFileState((prev) => ({
+        ...prev,
+        uploading: true,
+        progress: 0,
+      }));
 
-    try {
-      const response = await fetch("/api/s3/upload", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          file: file.name,
-          contentType: file.type,
-          size: file.size,
-          isImage: true,
-        }),
-      });
+      try {
+        const response = await fetch("/api/s3/upload", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            file: file.name,
+            contentType: file.type,
+            size: file.size,
+            isImage: fileType === "image",
+          }),
+        });
 
-      if (!response.ok) {
+        if (!response.ok) {
+          toast.error("Failed to upload file");
+          setFileState((prev) => ({
+            ...prev,
+            uploading: false,
+            progress: 0,
+            error: true,
+          }));
+          return;
+        }
+
+        const data = await response.json();
+
+        await new Promise<void>((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.upload.onprogress = (event) => {
+            if (event.lengthComputable) {
+              const progress = Math.round((event.loaded / event.total) * 100);
+              setFileState((prev) => ({
+                ...prev,
+                progress,
+              }));
+            }
+          };
+          xhr.onload = () => {
+            if (xhr.status === 200 || xhr.status === 204) {
+              setFileState((prev) => ({
+                ...prev,
+                uploading: false,
+                progress: 100,
+                key: data.key,
+                objectUrl: data.presignedUrl,
+              }));
+              toast.success("File uploaded successfully");
+              onChange?.(data.key);
+              resolve();
+            } else {
+              reject();
+            }
+          };
+          xhr.onerror = () => {
+            reject();
+          };
+          xhr.open("PUT", data.presignedUrl);
+          xhr.setRequestHeader("Content-Type", file.type);
+          xhr.send(file);
+        });
+      } catch (error) {
         toast.error("Failed to upload file");
         setFileState((prev) => ({
           ...prev,
@@ -73,55 +122,10 @@ function FileUploader({ value, onChange }: FileUploaderProps) {
           progress: 0,
           error: true,
         }));
-        return;
       }
-
-      const data = await response.json();
-
-      await new Promise<void>((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.upload.onprogress = (event) => {
-          if (event.lengthComputable) {
-            const progress = Math.round((event.loaded / event.total) * 100);
-            setFileState((prev) => ({
-              ...prev,
-              progress,
-            }));
-          }
-        };
-        xhr.onload = () => {
-          if (xhr.status === 200 || xhr.status === 204) {
-            setFileState((prev) => ({
-              ...prev,
-              uploading: false,
-              progress: 100,
-              key: data.key,
-              objectUrl: data.presignedUrl,
-            }));
-            toast.success("File uploaded successfully");
-            onChange?.(data.key);
-            resolve();
-          } else {
-            reject();
-          }
-        };
-        xhr.onerror = () => {
-          reject();
-        };
-        xhr.open("PUT", data.presignedUrl);
-        xhr.setRequestHeader("Content-Type", file.type);
-        xhr.send(file);
-      });
-    } catch (error) {
-      toast.error("Failed to upload file");
-      setFileState((prev) => ({
-        ...prev,
-        uploading: false,
-        progress: 0,
-        error: true,
-      }));
-    }
-  }
+    },
+    [fileType, onChange]
+  );
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -142,14 +146,14 @@ function FileUploader({ value, onChange }: FileUploaderProps) {
           error: false,
           isDeleting: false,
           objectUrl: URL.createObjectURL(file),
-          fileType: "image",
+          fileType: fileType,
           id: uuidv4(),
         });
 
         uploadFile(file);
       }
     },
-    [fileState.objectUrl]
+    [fileState.objectUrl, fileType, uploadFile]
   );
 
   async function deleteFile() {
@@ -192,7 +196,7 @@ function FileUploader({ value, onChange }: FileUploaderProps) {
         uploading: false,
         progress: 0,
         error: false,
-        fileType: "image",
+        fileType: fileType,
         id: null,
       }));
 
@@ -221,11 +225,13 @@ function FileUploader({ value, onChange }: FileUploaderProps) {
       if (fileTooLarge) {
         toast.error("File is too large");
       }
-      const notImage = fileRejection.find(
+      const invalidType = fileRejection.find(
         (rejection) => rejection.errors[0].code === "file-invalid-type"
       );
-      if (notImage) {
-        toast.error("Only images are allowed");
+      if (invalidType) {
+        toast.error(
+          `Only ${fileType === "image" ? "images" : "videos"} are allowed`
+        );
       }
     }
   };
@@ -248,6 +254,7 @@ function FileUploader({ value, onChange }: FileUploaderProps) {
           previewUrl={fileState.objectUrl}
           isDeleting={fileState.isDeleting}
           handleRemoveFile={deleteFile}
+          fileType={fileType}
         />
       );
     }
@@ -264,10 +271,10 @@ function FileUploader({ value, onChange }: FileUploaderProps) {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: onDrop,
-    accept: { "image/*": [] },
+    accept: fileType === "video" ? { "video/*": [] } : { "image/*": [] },
     maxFiles: 1,
     multiple: false,
-    maxSize: 1024 * 1024 * 5, // 5MB
+    maxSize: fileType === "image" ? 1024 * 1024 * 5 : 1024 * 1024 * 500, // 5MB for image, 500MB for video
     onDropRejected: rejectedFiles,
     disabled: !!fileState.uploading || !!fileState.objectUrl,
   });

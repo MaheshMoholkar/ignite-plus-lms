@@ -162,7 +162,11 @@ function EditBasicInfo({ course }: { course: AdminGetCourseType }) {
             <FormItem className="w-full">
               <FormLabel>Thumbnail Image</FormLabel>
               <FormControl>
-                <FileUploader value={field.value} onChange={field.onChange} />
+                <FileUploader
+                  value={field.value}
+                  onChange={field.onChange}
+                  fileType="image"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -282,13 +286,13 @@ function EditBasicInfo({ course }: { course: AdminGetCourseType }) {
         >
           {isPending ? (
             <>
-              Updating...
+              Saving...
               <Loader2Icon className="size-4 ml-1 animate-spin" />
             </>
           ) : (
             <>
               <PencilIcon className="size-4 mr-1" />
-              Update Course
+              Save Course
             </>
           )}
         </Button>
