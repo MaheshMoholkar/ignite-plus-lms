@@ -53,7 +53,8 @@ export async function enrollInCourseAction(
         };
       }
 
-      const existingEnrollment = await tx.enrollment.findFirst({
+      // Check for ACTIVE enrollment
+      const activeEnrollment = await tx.enrollment.findFirst({
         where: {
           userId: user.id,
           courseId: courseId,
@@ -65,13 +66,43 @@ export async function enrollInCourseAction(
         },
       });
 
-      if (existingEnrollment) {
+      if (activeEnrollment) {
         return {
           status: "error",
           message: "Already enrolled in this course",
         };
       }
 
+      // Check for PENDING enrollment (retry logic)
+      const pendingEnrollment = await tx.enrollment.findFirst({
+        where: {
+          userId: user.id,
+          courseId: courseId,
+          status: "PENDING",
+        },
+        select: {
+          id: true,
+          status: true,
+          razorpayOrderId: true,
+          amount: true,
+        },
+      });
+
+      if (pendingEnrollment) {
+        // Try to fetch the existing Razorpay order details (optional, but we can just return the orderId)
+        return {
+          status: "success",
+          message: "Order already created. Reusing existing order.",
+          data: {
+            orderId: pendingEnrollment.razorpayOrderId,
+            amount: course.price,
+            currency: "INR",
+            courseTitle: course.title,
+          },
+        };
+      }
+
+      // No PENDING or ACTIVE enrollment, create new order/enrollment
       const razorpayAmount = convertPriceForRazorpay(course.price, "INR");
       const receipt = `course_${courseId}_${user.id}_${Date.now()}`.slice(
         0,

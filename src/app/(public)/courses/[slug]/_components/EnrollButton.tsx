@@ -13,6 +13,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useRouter } from "next/navigation";
 
 declare global {
   interface Window {
@@ -36,6 +37,7 @@ export default function EnrollButton({
   enrollmentStatus,
 }: EnrollButtonProps) {
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   const handleEnroll = () => {
     startTransition(async () => {
@@ -94,6 +96,7 @@ export default function EnrollButton({
         toast.success(
           "Payment successful! Your enrollment is being processed."
         );
+        router.refresh();
       },
       prefill: {
         name: "",
