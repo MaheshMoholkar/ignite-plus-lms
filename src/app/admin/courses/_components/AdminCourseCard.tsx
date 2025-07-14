@@ -41,7 +41,7 @@ export function AdminCourseCard({
       <div className="absolute top-2 right-2">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" className="bg-accent">
               <MoreVerticalIcon className="size-4" />
             </Button>
           </DropdownMenuTrigger>

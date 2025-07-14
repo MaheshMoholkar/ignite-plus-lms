@@ -40,7 +40,7 @@ function DeleteCourseRoute() {
   };
 
   return (
-    <div className="max-w-xl mx-auto w-full">
+    <div className="max-w-xl mx-auto w-full mt-10">
       <Card>
         <CardHeader>
           <CardTitle>Delete Course</CardTitle>

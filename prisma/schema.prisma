@@ -10,9 +10,9 @@ datasource db {
 }
 
 model User {
-  id            String    @id
+  id            String       @id
   name          String
-  email         String    @unique
+  email         String       @unique
   emailVerified Boolean
   image         String?
   createdAt     DateTime
@@ -20,6 +20,7 @@ model User {
   accounts      Account[]
   courses       Course[]
   sessions      Session[]
+  enrollments   Enrollment[]
 
   role       String?
   banned     Boolean?
@@ -92,7 +93,8 @@ model Course {
   userId           String
   user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  chapters Chapter[]
+  chapters    Chapter[]
+  enrollments Enrollment[]
 
   @@map("course")
 }
@@ -147,4 +149,30 @@ model Lesson {
   chapterId String
 
   @@map("lesson")
+}
+
+model Enrollment {
+  id     String           @id @default(uuid())
+  amount Int
+  status EnrollmentStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId  String
+
+  razorpayOrderId   String? @unique
+  razorpayPaymentId String? @unique
+
+  @@unique([userId, courseId])
+  @@map("enrollment")
+}
+
+enum EnrollmentStatus {
+  PENDING
+  CANCELLED
+  ACTIVE
+  REFUNDED
 }

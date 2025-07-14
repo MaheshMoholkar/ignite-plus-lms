@@ -15,6 +15,7 @@ export async function getCourseBySlug(slug: string) {
       duration: true,
       level: true,
       category: true,
+      slug: true,
       smallDescription: true,
       chapters: {
         select: {
@@ -41,3 +42,5 @@ export async function getCourseBySlug(slug: string) {
 
   return course;
 }
+
+export type PublicGetCourseType = Awaited<ReturnType<typeof getCourseBySlug>>;
