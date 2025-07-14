@@ -95,7 +95,7 @@ export async function enrollInCourseAction(
           message: "Order already created. Reusing existing order.",
           data: {
             orderId: pendingEnrollment.razorpayOrderId,
-            amount: course.price,
+            amount: pendingEnrollment.amount,
             currency: "INR",
             courseTitle: course.title,
           },
@@ -137,6 +137,7 @@ export async function enrollInCourseAction(
           amount: course.price,
           status: "PENDING",
           razorpayOrderId: order.id,
+          expectedAmount: razorpayAmount,
         },
       });
 

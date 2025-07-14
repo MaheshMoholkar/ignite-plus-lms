@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { ApiResponse } from "@/lib/types";
 import { courseSchema, CourseSchemaType } from "@/lib/zodSchemas";
 import { requireAdmin } from "@/app/data/admin/require-admin";
+import { revalidatePath } from "next/cache";
 
 export async function CreateCourse(
   data: CourseSchemaType
@@ -25,6 +26,9 @@ export async function CreateCourse(
         userId: session.user.id,
       },
     });
+
+    revalidatePath("/admin/courses");
+    revalidatePath("/courses");
 
     return {
       status: "success",

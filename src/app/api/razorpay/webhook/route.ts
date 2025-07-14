@@ -71,11 +71,15 @@ export async function POST(request: NextRequest) {
 }
 
 async function handleWebhookEvent(event: WebhookEvent) {
-  const { order_id: orderId, id: paymentId } = event.payload.payment.entity;
+  const {
+    order_id: orderId,
+    id: paymentId,
+    amount: paidAmount,
+  } = event.payload.payment.entity;
 
   switch (event.event) {
     case "payment.captured":
-      await handlePaymentCaptured(orderId, paymentId);
+      await handlePaymentCaptured(orderId, paymentId, paidAmount);
       break;
     case "payment.failed":
       await handlePaymentFailed(orderId);
@@ -89,8 +93,25 @@ async function handleWebhookEvent(event: WebhookEvent) {
   }
 }
 
-async function handlePaymentCaptured(orderId: string, paymentId: string) {
+async function handlePaymentCaptured(
+  orderId: string,
+  paymentId: string,
+  paidAmount: number
+) {
   try {
+    // Fetch the enrollment by orderId
+    const enrollment = await prisma.enrollment.findUnique({
+      where: { razorpayOrderId: orderId },
+    });
+    if (!enrollment) return;
+
+    // Compare paid amount with expectedAmount
+    if (enrollment.expectedAmount !== paidAmount) {
+      //TODO: Optionally, log or handle the mismatch
+      // Do not activate enrollment if amounts do not match
+      return;
+    }
+
     await prisma.enrollment.update({
       where: {
         razorpayOrderId: orderId,

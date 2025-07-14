@@ -165,6 +165,7 @@ model Enrollment {
 
   razorpayOrderId   String? @unique
   razorpayPaymentId String? @unique
+  expectedAmount    Int? // Amount in smallest currency unit (e.g., paise for INR)
 
   @@unique([userId, courseId])
   @@map("enrollment")
