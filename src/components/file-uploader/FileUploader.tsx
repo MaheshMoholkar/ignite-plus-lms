@@ -246,7 +246,26 @@ function FileUploader({ value, onChange, fileType }: FileUploaderProps) {
       );
     }
     if (fileState.error) {
-      return <RenderErrorState />;
+      return (
+        <RenderErrorState
+          onRetry={() => {
+            if (fileState.file) {
+              setFileState((prev) => ({
+                ...prev,
+                error: false,
+                uploading: true,
+                progress: 0,
+              }));
+              uploadFile(fileState.file);
+            } else {
+              setFileState((prev) => ({
+                ...prev,
+                error: false,
+              }));
+            }
+          }}
+        />
+      );
     }
     if (fileState.objectUrl) {
       return (

@@ -43,8 +43,7 @@ export function RenderEmptyState({
   );
 }
 
-export function RenderErrorState() {
-  //TODO: fix try again
+export function RenderErrorState({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="text-center">
       <div className="flex items-center mx-auto justify-center size-12 rounded-full bg-destructive/30 mb-4">
@@ -52,7 +51,7 @@ export function RenderErrorState() {
       </div>
       <p className="text-base font-semibold">Upload Failed</p>
       <p className="text-xs mt-1 text-muted-foreground">Something went wrong</p>
-      <Button type="button" className="mt-4">
+      <Button type="button" className="mt-4" onClick={onRetry}>
         Try Again
       </Button>
     </div>

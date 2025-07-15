@@ -49,9 +49,9 @@ function CourseProgressCard({ course }: GetEnrolledCourseType) {
         <p className="line-clamp-2 text-sm text-muted-foreground leading-tight">
           {course.smallDescription}
         </p>
-        <div className="space-y-4">
-          <div>
-            <p>Progress:</p>
+        <div className="space-y-4 mt-5">
+          <div className="space-y-2">
+            <p className="text-sm font-medium">Progress:</p>
             <div className="flex items-center justify-between text-xs mb-1">
               <span className="text-muted-foreground">
                 {completedLessons}/{totalLessons} lessons
