@@ -10,6 +10,7 @@ function LessonItem({
   lesson,
   slug,
   isActive,
+  completed,
 }: {
   lesson: {
     id: string;
@@ -19,8 +20,8 @@ function LessonItem({
   };
   slug: string;
   isActive: boolean;
+  completed: boolean | null;
 }) {
-  const completed = true;
   return (
     <Link
       href={`/dashboard/${slug}/${lesson.id}`}

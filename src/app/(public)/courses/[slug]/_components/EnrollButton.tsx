@@ -126,7 +126,7 @@ export default function EnrollButton({
 
   if (enrollmentStatus === "ACTIVE") {
     return (
-      <Link href={`/courses/${courseSlug}/content`}>
+      <Link href={`/dashboard/${courseSlug}`}>
         <Button className="w-full" variant="default">
           Go to Course
         </Button>

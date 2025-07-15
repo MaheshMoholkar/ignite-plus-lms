@@ -60,7 +60,7 @@ function Navbar() {
             })}
           </div>
         </nav>
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4 ml-auto md:ml-0">
           <ThemeToggle />
           {isPending ? null : session ? (
             <UserDropdown

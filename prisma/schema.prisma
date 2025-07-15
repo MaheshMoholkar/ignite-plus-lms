@@ -10,17 +10,18 @@ datasource db {
 }
 
 model User {
-  id            String       @id
-  name          String
-  email         String       @unique
-  emailVerified Boolean
-  image         String?
-  createdAt     DateTime
-  updatedAt     DateTime
-  accounts      Account[]
-  courses       Course[]
-  sessions      Session[]
-  enrollments   Enrollment[]
+  id             String           @id
+  name           String
+  email          String           @unique
+  emailVerified  Boolean
+  image          String?
+  createdAt      DateTime
+  updatedAt      DateTime
+  accounts       Account[]
+  courses        Course[]
+  sessions       Session[]
+  enrollments    Enrollment[]
+  lessonProgress LessonProgress[]
 
   role       String?
   banned     Boolean?
@@ -148,6 +149,8 @@ model Lesson {
   chapter   Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
   chapterId String
 
+  lessonProgress LessonProgress[]
+
   @@map("lesson")
 }
 
@@ -176,4 +179,20 @@ enum EnrollmentStatus {
   CANCELLED
   ACTIVE
   REFUNDED
+}
+
+model LessonProgress {
+  id        String  @id @default(uuid())
+  completed Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String
+  lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lessonId String
+
+  @@unique([userId, lessonId])
+  @@map("lesson_progress")
 }

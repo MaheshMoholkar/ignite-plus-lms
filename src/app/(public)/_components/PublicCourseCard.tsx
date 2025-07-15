@@ -22,7 +22,7 @@ function PublicCourseCard({ course }: { course: PublicGetCourseType }) {
         className="w-full rounded-t-xl aspect-video h-full object-cover"
       />
       <CardContent className="p-4">
-        <Link href={`/courses/${course.slug}`}>
+        <Link href={`/dashboard/${course.slug}`}>
           <h3 className="font-medium text-lg line-clamp-2 hover:underline group-hover:text-primary transition-colors">
             {course.title}
           </h3>
