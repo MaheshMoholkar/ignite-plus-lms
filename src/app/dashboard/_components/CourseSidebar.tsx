@@ -1,3 +1,5 @@
+"use client";
+
 import { CourseSidebarType } from "@/app/data/course/get-course-sidebar";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,8 +12,15 @@ import { courseCategoryLabels } from "@/lib/zodSchemas";
 import { ChevronDown, Play } from "lucide-react";
 import React from "react";
 import LessonItem from "./LessonItem";
+import { usePathname } from "next/navigation";
 
 function CourseSidebar({ course }: { course: CourseSidebarType }) {
+  const pathname = usePathname();
+
+  const isActive = (lessonId: string) => {
+    return pathname.includes(lessonId);
+  };
+
   return (
     <div className="flex flex-col h-full">
       <div className="pb-4 pr-4 border-b border-border">
@@ -61,7 +70,12 @@ function CourseSidebar({ course }: { course: CourseSidebarType }) {
             </CollapsibleTrigger>
             <CollapsibleContent className="mt-3 pl-6 border-l-2 space-y-3">
               {chapter.lessons.map((lesson, index) => (
-                <LessonItem key={index} lesson={lesson} slug={course.slug} />
+                <LessonItem
+                  key={index}
+                  lesson={lesson}
+                  slug={course.slug}
+                  isActive={isActive(lesson.id)}
+                />
               ))}
             </CollapsibleContent>
           </Collapsible>

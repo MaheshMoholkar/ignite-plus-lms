@@ -3,13 +3,13 @@
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Check, Play } from "lucide-react";
-import { useTheme } from "next-themes";
 import Link from "next/link";
 import React from "react";
 
 function LessonItem({
   lesson,
   slug,
+  isActive,
 }: {
   lesson: {
     id: string;
@@ -18,18 +18,21 @@ function LessonItem({
     description: string | null;
   };
   slug: string;
+  isActive: boolean;
 }) {
-  const { resolvedTheme } = useTheme();
   const completed = true;
   return (
     <Link
       href={`/dashboard/${slug}/${lesson.id}`}
       className={buttonVariants({
-        variant: resolvedTheme === "dark" ? "secondary" : "outline",
+        variant: "outline",
         className: cn(
           "w-full p-2.5 h-auto justify-start transition-all",
-          completed &&
-            "bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-700 hover:bg-green-200 dark:hover:bg-green-900/50 text-green-800 dark:text-green-200"
+          isActive
+            ? "!bg-orange-100 dark:!bg-orange-900/50 !text-orange-800 dark:!text-orange-200 !border-orange-300 dark:!border-orange-700"
+            : completed
+              ? "!bg-green-100 dark:!bg-teal-900/50 !text-green-800 dark:!text-teal-200 !border-teal-300 dark:!border-teal-700"
+              : "!border-muted-foreground/20 dark:!border-muted-foreground/20"
         ),
       })}
     >
@@ -40,12 +43,8 @@ function LessonItem({
               <Check className="size-3 text-green-800 dark:text-green-200" />
             </div>
           ) : (
-            <div
-              className={cn(
-                "size-5 rounded-full border-2 bg-primary/10 flex justify-center items-center"
-              )}
-            >
-              <Play className={cn("size-2.5 fill-current")} />
+            <div className="size-5 rounded-full border-2 bg-primary/10 flex justify-center items-center">
+              <Play className="size-2.5 fill-current" />
             </div>
           )}
         </div>
@@ -53,7 +52,11 @@ function LessonItem({
           <p
             className={cn(
               "text-xs font-medium truncate",
-              completed && "text-green-800 dark:text-green-200"
+              completed
+                ? "text-green-950 dark:text-green-50"
+                : isActive
+                  ? "text-primary font-semibold"
+                  : "text-foreground"
             )}
           >
             {lesson.position}. {lesson.title}

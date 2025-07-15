@@ -43,3 +43,5 @@ export async function getLessonContent(lessonId: string) {
 
   return lesson;
 }
+
+export type LessonContentType = Awaited<ReturnType<typeof getLessonContent>>;

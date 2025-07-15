@@ -7,9 +7,10 @@ async function Layout({
   params,
 }: {
   children: ReactNode;
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const course = await getCourseSidebarData(params.slug);
+  const { slug } = await params;
+  const course = await getCourseSidebarData(slug);
   return (
     <div className="flex flex-1">
       {/* Sidebar */}
