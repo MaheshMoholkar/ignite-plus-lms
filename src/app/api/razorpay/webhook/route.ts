@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
   let event: WebhookEvent;
   try {
     event = JSON.parse(rawBody);
-  } catch (e) {
+  } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 

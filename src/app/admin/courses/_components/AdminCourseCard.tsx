@@ -26,12 +26,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 export function AdminCourseCard({
   id,
   title,
-  description,
   smallDescription,
   duration,
   level,
-  status,
-  price,
+
   fileKey,
   slug,
 }: AdminCourseType) {

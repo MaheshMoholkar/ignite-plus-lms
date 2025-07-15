@@ -1,6 +1,7 @@
 export type ApiResponse = {
   status: "success" | "error";
   message: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data?: any;
   error?: string;
 };
@@ -12,6 +13,7 @@ export type RazorpayError = {
   source: string;
   step: string;
   reason: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   metadata: Record<string, any>;
   field?: string;
 };
@@ -58,6 +60,7 @@ export type RazorpayOrder = {
   offers?: string[];
   status: RazorpayOrderStatus;
   attempts: number;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   notes: Record<string, any>[];
   created_at: number;
 };
@@ -73,6 +76,7 @@ export type CreateOrderRequest = {
   amount: number;
   currency: string;
   receipt: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   notes?: Record<string, any>;
   partial_payment?: boolean;
   callback_url?: string;
@@ -184,6 +188,7 @@ export type RazorpayPayment = {
   vpa: string | null;
   email: string;
   contact: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   notes: Record<string, any>[];
   fee: number;
   tax: number;

@@ -1,26 +1,16 @@
 import React from "react";
-import { getCourseBySlug } from "../../data/course/get-course-by-slug";
+import {
+  getCourseBySlug,
+  PublicGetCourseType,
+} from "../../data/course/get-course-by-slug";
 import { Badge } from "@/components/ui/badge";
 import { useConstructUrl } from "@/hooks/use-contruct-url";
 import Image from "next/image";
 import { RenderDescription } from "@/components/rich-text-editor/RenderDescription";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+
 import { Separator } from "@/components/ui/separator";
 import { courseLevelLabels, courseCategoryLabels } from "@/lib/zodSchemas";
-import {
-  IconChartBar,
-  IconCategory,
-  IconClock,
-  IconChevronDown,
-  IconPlayerPlay,
-  IconBook,
-} from "@tabler/icons-react";
-import { CheckIcon } from "lucide-react";
+import { IconChartBar, IconCategory, IconClock } from "@tabler/icons-react";
 import { EmptyState } from "@/components/common/EmptyState";
 
 interface CourseSlugPageProps {
@@ -40,6 +30,11 @@ export default async function CourseSlug({ params }: CourseSlugPageProps) {
       />
     );
   }
+
+  return <CourseDescription course={course} />;
+}
+
+function CourseDescription({ course }: { course: PublicGetCourseType }) {
   const imageUrl = useConstructUrl(course.fileKey);
   return (
     <div className="max-w-3xl mx-auto py-8 px-4">

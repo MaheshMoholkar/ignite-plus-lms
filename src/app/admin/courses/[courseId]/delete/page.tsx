@@ -9,12 +9,12 @@ import {
 } from "@/components/ui/card";
 import { Button, buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
-import React, { startTransition, useTransition } from "react";
+import React, { useTransition } from "react";
 import { tryCatch } from "@/hooks/try-catch";
 import { toast } from "sonner";
 import { DeleteCourse } from "./actions";
 import { useParams, useRouter } from "next/navigation";
-import { Loader2Icon, PlusIcon, Trash2 } from "lucide-react";
+import { Loader2Icon, Trash2 } from "lucide-react";
 
 function DeleteCourseRoute() {
   const [pending, startTransition] = useTransition();

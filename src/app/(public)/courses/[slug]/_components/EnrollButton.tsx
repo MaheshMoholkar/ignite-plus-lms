@@ -14,12 +14,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useRouter } from "next/navigation";
-import { useTheme } from "next-themes";
 import { convertPriceForRazorpay } from "@/lib/razorpay";
 import { useConfetti } from "@/hooks/use-confetti";
 
 declare global {
   interface Window {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Razorpay: any;
   }
 }
@@ -42,6 +42,7 @@ export default function EnrollButton({
   const [isPending, startTransition] = useTransition();
   const [isModalCancelled, setIsModalCancelled] = useState(false);
   const router = useRouter();
+  const { triggerConfetti } = useConfetti();
 
   const handleEnroll = () => {
     startTransition(async () => {
@@ -63,7 +64,7 @@ export default function EnrollButton({
         try {
           await initializeRazorpay();
           openRazorpayCheckout(result.data, courseTitle);
-        } catch (error) {
+        } catch {
           toast.error("Failed to open payment gateway. Please try again.");
         }
       }
@@ -88,6 +89,7 @@ export default function EnrollButton({
     });
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const openRazorpayCheckout = (orderData: any, courseTitle: string) => {
     const options = {
       key: env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
@@ -96,11 +98,11 @@ export default function EnrollButton({
       name: "Ignite Plus LMS",
       description: courseTitle,
       order_id: orderData.orderId,
-      handler: function (response: any) {
+      handler: function () {
         toast.success(
           "Payment successful! Your enrollment is being processed."
         );
-        useConfetti();
+        triggerConfetti();
         router.refresh();
       },
       prefill: {

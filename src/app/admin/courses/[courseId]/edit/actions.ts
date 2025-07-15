@@ -37,7 +37,7 @@ export async function UpdateCourse(
       message: "Course updated successfully",
       data: course,
     };
-  } catch (error) {
+  } catch {
     return {
       status: "error",
       message: "Failed to update course",
@@ -79,7 +79,7 @@ export async function UpdateCourseLessons(
       status: "success",
       message: "Lessons reordered successfully",
     };
-  } catch (error) {
+  } catch {
     return {
       status: "error",
       message: "Failed to reordered lessons",
@@ -118,7 +118,7 @@ export async function UpdateCourseChapters(
       status: "success",
       message: "Chapters reordered successfully",
     };
-  } catch (error) {
+  } catch {
     return {
       status: "error",
       message: "Failed to reorder chapters",
@@ -170,7 +170,7 @@ export async function CreateChapter(
       status: "success",
       message: "Chapter created successfully",
     };
-  } catch (error) {
+  } catch {
     return {
       status: "error",
       message: "Failed to create chapter",
@@ -226,7 +226,7 @@ export async function CreateLesson(
       status: "success",
       message: "Lesson created successfully",
     };
-  } catch (error) {
+  } catch {
     return {
       status: "error",
       message: "Failed to create lesson",
@@ -297,7 +297,7 @@ export async function DeleteLesson(
       status: "success",
       message: "Lesson deleted successfully",
     };
-  } catch (error) {
+  } catch {
     return {
       status: "error",
       message: "Failed to delete lesson",
@@ -373,7 +373,7 @@ export async function DeleteChapter(
       status: "success",
       message: "Chapter deleted successfully",
     };
-  } catch (error) {
+  } catch {
     return {
       status: "error",
       message: "Failed to delete chapter",

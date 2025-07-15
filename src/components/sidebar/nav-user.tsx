@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
-import { HomeIcon, LayoutDashboard } from "lucide-react";
+import { HomeIcon } from "lucide-react";
 import { useSignOut } from "@/hooks/use-signout";
 
 export function NavUser() {

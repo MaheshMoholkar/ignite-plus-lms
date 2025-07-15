@@ -33,6 +33,7 @@ interface FileUploaderProps {
 }
 
 function FileUploader({ value, onChange, fileType }: FileUploaderProps) {
+  const objectUrl = useConstructUrl(value || "");
   const [fileState, setFileState] = useState<UploaderState>({
     id: null,
     file: null,
@@ -41,7 +42,7 @@ function FileUploader({ value, onChange, fileType }: FileUploaderProps) {
     key: value,
     error: false,
     isDeleting: false,
-    objectUrl: value ? useConstructUrl(value) : undefined,
+    objectUrl: value ? objectUrl : undefined,
     fileType: fileType,
   });
 
@@ -114,7 +115,7 @@ function FileUploader({ value, onChange, fileType }: FileUploaderProps) {
           xhr.setRequestHeader("Content-Type", file.type);
           xhr.send(file);
         });
-      } catch (error) {
+      } catch {
         toast.error("Failed to upload file");
         setFileState((prev) => ({
           ...prev,
@@ -153,7 +154,7 @@ function FileUploader({ value, onChange, fileType }: FileUploaderProps) {
         uploadFile(file);
       }
     },
-    [fileState.objectUrl, fileType, uploadFile]
+    [fileState, fileType, uploadFile]
   );
 
   async function deleteFile() {
