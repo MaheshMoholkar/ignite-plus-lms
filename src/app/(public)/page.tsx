@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { BookOpen, Users, Play, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { authClient } from "@/lib/auth-client";
 
 interface Feature {
   title: string;
@@ -40,6 +41,7 @@ const features: Feature[] = [
 ];
 
 export default function Home() {
+  const { data: session, isPending } = authClient.useSession();
   return (
     <>
       <section className="relative py-20">
@@ -61,15 +63,17 @@ export default function Home() {
             >
               Explore Courses
             </Link>
-            <Link
-              className={buttonVariants({
-                size: "lg",
-                variant: "outline",
-              })}
-              href="/login"
-            >
-              Get Started
-            </Link>
+            {!session && !isPending && (
+              <Link
+                className={buttonVariants({
+                  size: "lg",
+                  variant: "outline",
+                })}
+                href="/login"
+              >
+                Get Started
+              </Link>
+            )}
           </div>
         </div>
       </section>
