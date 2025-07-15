@@ -3,7 +3,6 @@ import "server-only";
 import { prisma } from "@/lib/prisma";
 
 export async function getAllCourses() {
-  await new Promise((resolve) => setTimeout(resolve, 2000));
   const data = await prisma.course.findMany({
     where: {
       status: "PUBLISHED",
