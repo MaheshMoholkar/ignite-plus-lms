@@ -56,7 +56,10 @@ export function NavMain({
                   >
                     {item.icon && (
                       <item.icon
-                        className={cn(pathname === item.url && "text-primary")}
+                        className={cn(
+                          "tabler-icon",
+                          pathname === item.url ? "text-primary" : ""
+                        )}
                       />
                     )}
                     <span>{item.title}</span>
