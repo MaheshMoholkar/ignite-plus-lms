@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { env } from "@/env";
 import { enrollInCourseAction } from "../actions";
 import { tryCatch } from "@/hooks/try-catch";
-import { useTransition } from "react";
+import { useTransition, useState } from "react";
 import Link from "next/link";
 import {
   Tooltip,
@@ -14,6 +14,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
+import { convertPriceForRazorpay } from "@/lib/razorpay";
+import { useConfetti } from "@/hooks/use-confetti";
 
 declare global {
   interface Window {
@@ -37,6 +40,7 @@ export default function EnrollButton({
   enrollmentStatus,
 }: EnrollButtonProps) {
   const [isPending, startTransition] = useTransition();
+  const [isModalCancelled, setIsModalCancelled] = useState(false);
   const router = useRouter();
 
   const handleEnroll = () => {
@@ -87,7 +91,7 @@ export default function EnrollButton({
   const openRazorpayCheckout = (orderData: any, courseTitle: string) => {
     const options = {
       key: env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-      amount: coursePrice * 100,
+      amount: convertPriceForRazorpay(coursePrice, "INR"),
       currency: "INR",
       name: "Ignite Plus LMS",
       description: courseTitle,
@@ -96,18 +100,18 @@ export default function EnrollButton({
         toast.success(
           "Payment successful! Your enrollment is being processed."
         );
+        useConfetti();
         router.refresh();
       },
       prefill: {
         name: "",
         email: "",
       },
-      theme: {
-        color: "#3B82F6",
-      },
       modal: {
         ondismiss: function () {
-          toast.error("Payment modal closed");
+          toast.error("Payment cancelled");
+          router.refresh();
+          setIsModalCancelled(true);
         },
       },
       notes: {
@@ -136,24 +140,20 @@ export default function EnrollButton({
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button className="w-full" disabled>
-                Enrollment Pending
+              <Button variant="outline" className="w-full">
+                {isModalCancelled ? "Payment Cancelled" : "Enrollment Pending"}
               </Button>
             </TooltipTrigger>
             <TooltipContent>
               <span>
-                Your payment is being processed. If you have completed payment
-                and still see this, please wait a few minutes or retry.
+                {isModalCancelled
+                  ? "Your payment was cancelled. Click retry to attempt payment again."
+                  : "Your payment is being processed. If you have completed payment and still see this, please wait a few minutes or retry."}
               </span>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        <Button
-          className="w-full"
-          variant="outline"
-          onClick={handleEnroll}
-          disabled={isPending}
-        >
+        <Button className="w-full" onClick={handleEnroll} disabled={isPending}>
           {isPending ? "Retrying..." : "Retry Payment"}
         </Button>
       </div>

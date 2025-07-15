@@ -167,6 +167,7 @@ export async function enrollInCourseAction(
     return {
       status: "error",
       message: "Failed to create enrollment. Please try again.",
+      error: error as string,
     };
   }
 }
