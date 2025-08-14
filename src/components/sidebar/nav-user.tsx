@@ -1,6 +1,6 @@
 "use client";
 
-import { IconDotsVertical, IconLogout } from "@tabler/icons-react";
+import { IconDotsVertical, IconLogout, IconUser } from "@tabler/icons-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -22,11 +22,37 @@ import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
 import { HomeIcon } from "lucide-react";
 import { useSignOut } from "@/hooks/use-signout";
+import { useEffect, useState } from "react";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
   const handleSignOut = useSignOut();
   const { data: session } = authClient.useSession();
+  const [isGuest, setIsGuest] = useState(false);
+
+  useEffect(() => {
+    const checkGuestAccess = () => {
+      const cookies = document.cookie.split(";");
+      const guestCookie = cookies.find((cookie) =>
+        cookie.trim().startsWith("guest-access=")
+      );
+      setIsGuest(!!guestCookie);
+    };
+
+    checkGuestAccess();
+  }, []);
+
+  const userName = isGuest ? "John Doe" : session?.user?.name;
+  const userEmail = isGuest ? "john.doe@example.com" : session?.user?.email;
+  const userImage = isGuest ? null : session?.user?.image;
+
+  const handleGuestLogout = () => {
+    document.cookie =
+      "guest-access=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
+    window.location.reload();
+    window.location.href = "/";
+  };
 
   return (
     <SidebarMenu>
@@ -39,22 +65,17 @@ export function NavUser() {
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage
-                  src={
-                    session?.user?.image ||
-                    `https://avatar.vercel.sh/${session?.user?.email}`
-                  }
-                  alt={session?.user?.name || ""}
+                  src={userImage || `https://avatar.vercel.sh/${userEmail}`}
+                  alt={userName || ""}
                 />
                 <AvatarFallback className="rounded-lg">
-                  {session?.user?.email?.charAt(0)}
+                  {isGuest ? <IconUser size={16} /> : userEmail?.charAt(0)}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">
-                  {session?.user?.name}
-                </span>
+                <span className="truncate font-medium">{userName}</span>
                 <span className="text-muted-foreground truncate text-xs">
-                  {session?.user?.email}
+                  {isGuest ? "Guest User" : userEmail}
                 </span>
               </div>
               <IconDotsVertical className="ml-auto size-4" />
@@ -69,20 +90,15 @@ export function NavUser() {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage
-                    src={session?.user?.image || ""}
-                    alt={session?.user?.name || ""}
-                  />
+                  <AvatarImage src={userImage || ""} alt={userName || ""} />
                   <AvatarFallback className="rounded-lg">
-                    {session?.user?.email?.charAt(0)}
+                    {isGuest ? <IconUser size={16} /> : userEmail?.charAt(0)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">
-                    {session?.user?.name}
-                  </span>
+                  <span className="truncate font-medium">{userName}</span>
                   <span className="text-muted-foreground truncate text-xs">
-                    {session?.user?.email}
+                    {isGuest ? "Guest User" : userEmail}
                   </span>
                 </div>
               </div>
@@ -99,9 +115,11 @@ export function NavUser() {
             <DropdownMenuSeparator />
 
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleSignOut}>
+            <DropdownMenuItem
+              onClick={isGuest ? handleGuestLogout : handleSignOut}
+            >
               <IconLogout />
-              Log out
+              {isGuest ? "Exit Guest Mode" : "Log out"}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
