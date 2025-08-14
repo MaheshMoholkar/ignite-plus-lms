@@ -16,10 +16,12 @@ import { toast } from "sonner";
 import { Loader } from "lucide-react";
 import React, { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { loginAsGuest } from "../actions";
 
 function LoginForm() {
   const [githubPending, startGithubTransition] = useTransition();
   const [emailPending, startEmailTransition] = useTransition();
+  const [guestPending, startGuestTransition] = useTransition();
   const [email, setEmail] = useState("");
   const router = useRouter();
 
@@ -60,6 +62,12 @@ function LoginForm() {
           },
         },
       });
+    });
+  };
+
+  const handleGuestLogin = async () => {
+    startGuestTransition(async () => {
+      await loginAsGuest();
     });
   };
 
@@ -136,6 +144,29 @@ function LoginForm() {
                 </svg>{" "}
                 Continue with Github
               </>
+            )}
+          </Button>
+
+          {/* Guest Login Section */}
+          <div className="relative items-center text-center after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+            <span className="relative z-10 text-sm bg-card px-2 text-muted-foreground">
+              For Recruiters
+            </span>
+          </div>
+
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={handleGuestLogin}
+            disabled={guestPending}
+          >
+            {guestPending ? (
+              <>
+                <Loader className="w-4 h-4 animate-spin" />
+                <span>Setting up guest access...</span>
+              </>
+            ) : (
+              "Continue as Guest"
             )}
           </Button>
         </div>

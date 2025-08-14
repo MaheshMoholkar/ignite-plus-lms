@@ -4,6 +4,7 @@ import {
   HomeIcon,
   LayoutDashboardIcon,
   LogOutIcon,
+  UserIcon,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -29,6 +30,15 @@ interface User {
 export default function UserDropdown(props: User) {
   const handleSignOut = useSignOut();
 
+  const isGuest = props.email === "john.doe@example.com";
+
+  const handleGuestLogout = () => {
+    document.cookie =
+      "guest-access=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    window.location.reload();
+    window.location.href = "/";
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -38,7 +48,9 @@ export default function UserDropdown(props: User) {
               src={props.image ?? `https://avatar.vercel.sh/${props.email}`}
               alt="Profile image"
             />
-            <AvatarFallback>{props.email.charAt(0)}</AvatarFallback>
+            <AvatarFallback>
+              {isGuest ? <UserIcon size={16} /> : props.email.charAt(0)}
+            </AvatarFallback>
           </Avatar>
           <ChevronDownIcon
             size={16}
@@ -86,9 +98,9 @@ export default function UserDropdown(props: User) {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut}>
+        <DropdownMenuItem onClick={isGuest ? handleGuestLogout : handleSignOut}>
           <LogOutIcon size={16} className="opacity-60" aria-hidden="true" />
-          <span>Logout</span>
+          <span>{isGuest ? "Exit Guest Mode" : "Logout"}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

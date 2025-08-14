@@ -6,14 +6,18 @@ import {
 } from "../data/user/get-enrolled-courses";
 import PublicCourseCard from "../(public)/_components/PublicCourseCard";
 import CourseProgressCard from "./_components/CourseProgressCard";
+import GuestBanner from "./_components/GuestBanner";
 
 export default async function Page() {
   const [allCourses, enrolledCourses] = await Promise.all([
     getAllCourses(),
     getEnrolledCourses(),
   ]);
+
   return (
     <>
+      <GuestBanner />
+
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold mb-4">Enrolled Courses</h1>
         <p className="text-muted-foreground mb-4">

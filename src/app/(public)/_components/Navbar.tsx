@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import logo from "@/public/logo.svg";
@@ -28,6 +28,19 @@ const navigationItems = [
 function Navbar() {
   const { data: session, isPending } = authClient.useSession();
   const pathname = usePathname();
+  const [isGuest, setIsGuest] = useState(false);
+
+  useEffect(() => {
+    const checkGuestAccess = () => {
+      const cookies = document.cookie.split(";");
+      const guestCookie = cookies.find((cookie) =>
+        cookie.trim().startsWith("guest-access=")
+      );
+      setIsGuest(!!guestCookie);
+    };
+
+    checkGuestAccess();
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur-[backdrop-filter]:bg-background/60">
@@ -67,6 +80,12 @@ function Navbar() {
               name={session.user.name}
               email={session.user.email}
               image={session.user.image}
+            />
+          ) : isGuest ? (
+            <UserDropdown
+              name="John Doe"
+              email="john.doe@example.com"
+              image={null}
             />
           ) : (
             <>
