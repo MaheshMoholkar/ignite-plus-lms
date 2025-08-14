@@ -5,13 +5,13 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 export async function requireUser() {
-  const sesson = await auth.api.getSession({
+  const session = await auth.api.getSession({
     headers: await headers(),
   });
 
-  if (!sesson) {
+  if (!session) {
     return redirect("/login");
   }
 
-  return sesson.user;
+  return session.user;
 }
